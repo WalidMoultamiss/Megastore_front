@@ -3,6 +3,7 @@ import React, { FC, useEffect, useState } from "react";
 import { Product } from "@/graphql/generated/graphql";
 import { motion } from "framer-motion";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+import { CircularProgress } from "@mui/material";
 
 type Props = {
   product: any;
@@ -38,7 +39,9 @@ export const ProductComp: FC<Props> = ({ product, onDashboard, color }) => {
       }
       passHref
     >
-      <div className="w-full md:w-1/3 xl:w-1/4 p-6 flex flex-col cursor-pointer border-[5px] border-indigo-500 ">
+      <div
+        className="w-full relative md:w-1/3 xl:w-1/4 p-6 flex flex-col cursor-pointer border-[5px] border-indigo-500 "
+      >
         <div
           style={{
             backgroundImage: `url(${
@@ -69,8 +72,18 @@ export const ProductComp: FC<Props> = ({ product, onDashboard, color }) => {
               .fill(0)
               .map((_, i) => (
                 <motion.div
-                  initial={{ opacity: 1, y: 0 ,scale : 0.4 }}
-                  animate={{scale:1.5   , opacity: 0, y: -130, x: i%2 ? [0, -20, 0, -30] : i%3 ? [0, 20, 0, 30] : [0, -10, 10, -30] }}
+                  initial={{ opacity: 1, y: 0, scale: 0.4 }}
+                  animate={{
+                    scale: 1.5,
+                    opacity: 0,
+                    y: -130,
+                    x:
+                      i % 2
+                        ? [0, -20, 0, -30]
+                        : i % 3
+                        ? [0, 20, 0, 30]
+                        : [0, -10, 10, -30],
+                  }}
                   transition={{ duration: 0.8 }}
                   className="absolute right-0"
                   key={i}

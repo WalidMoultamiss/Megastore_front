@@ -30,7 +30,7 @@ export const PopupStore: FC<Props> = ({
 
 
   return (
-    <div className="fixed popup z-40 top-0 left-0  w-full h-screen bg-black bg-opacity-20 backdrop-blur-sm flex justify-center items-center">
+    <div className="fixed popup z-[101] top-0 left-0  w-full h-screen bg-black bg-opacity-20 backdrop-blur-sm flex justify-center items-center">
       <span className="absolute top-0 right-0 cursor-pointer m-4">
         <PrimaryBtn
           className="hover:bg-red-100"
@@ -42,6 +42,7 @@ export const PopupStore: FC<Props> = ({
       <motion.div
         initial={{ opacity: 0, y: -100, scale: 0.5 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: -100 }}
         transition={{ duration: 0.2 }}
         style={{
           border: `4px solid ${color}`,
@@ -80,6 +81,7 @@ export const PopupStore: FC<Props> = ({
             <motion.button
               initial={{ y: -100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -100, opacity: 0 }}
               transition={{ duration: 0.7 }}
               className="inline-block mt-10 px-10 py-3 text-lg  text-white font-semibold"
               style={{ background: color }}

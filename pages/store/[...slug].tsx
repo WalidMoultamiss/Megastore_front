@@ -4,7 +4,10 @@ import HomeSlider from "@/components/HomeSlider";
 import { PopupStore } from "@/components/PopupStore";
 import { ProductComp } from "@/components/Product";
 import apolloClient from "@/graphql/apollo";
-import { GetStoreByIdDocument , useProductAddedSubscription } from "@/graphql/generated/graphql";
+import {
+  GetStoreByIdDocument,
+  useProductAddedSubscription,
+} from "@/graphql/generated/graphql";
 import { useQuery } from "@apollo/client";
 import { GetServerSideProps, NextPage } from "next";
 import { useRouter } from "next/router";
@@ -13,7 +16,8 @@ import Lottie from "lottie-react";
 import * as boxProduct from "@/lottie/boxProduct.json";
 import FooterStore from "@/components/FooterStore";
 import { gql, useSubscription } from "@apollo/client";
-
+import { CircularProgress } from "@mui/material";
+import { AnimatePresence } from "framer-motion";
 
 const Store: NextPage = () => {
   const [popup, setPopup] = useState(false);
@@ -32,8 +36,6 @@ const Store: NextPage = () => {
     },
   });
 
-
-  
   const PRODUCT_SUBSCRIPTION = gql`
     subscription ProductAdded {
       productAdded {
@@ -48,23 +50,19 @@ const Store: NextPage = () => {
 
   const {
     data: subscriptionData,
-    loading : subLoading,
-    error : subError,
+    loading: subLoading,
+    error: subError,
   } = useProductAddedSubscription({
     onSubscriptionData: (data) => {
       console.log({ data: data });
-    }
+    },
   });
-
-  
 
   useEffect(() => {
     if (subscriptionData) {
       console.log(subscriptionData);
     }
-  }, [subscriptionData , subError , subLoading]);
-
-
+  }, [subscriptionData, subError, subLoading]);
 
   const store = data?.getStoreById;
 
@@ -115,6 +113,7 @@ const Store: NextPage = () => {
             </div>
           )}
           <div className="max-w-[1000px] w-full flex flex-wrap justify-center">
+            {loading && <CircularProgress />}
             {products?.slice(0, 4).map((product: any, i: number) => (
               <ProductComp key={i} product={product} />
             ))}
@@ -142,7 +141,13 @@ const Store: NextPage = () => {
               Our Products
             </div>
           )}
-          <div className="max-w-[1000px] w-full flex flex-wrap">
+          <div className="max-w-[1000px] w-full flex  flex-wrap">
+            {loading && (
+              <div className="flex w-full justify-center">
+                <CircularProgress />
+              </div>
+            )}
+
             {products?.map((product: any, i: number) => (
               <ProductComp key={i} product={product} />
             ))}
@@ -154,17 +159,17 @@ const Store: NextPage = () => {
       <div className="flex justify-center border-t-2 border-gray-500 border-solid shadow-xl w-full">
         <div className="max-w-[800px]">
           <FooterStore primaryColor={store?.options.primaryColor} store />
-          
         </div>
       </div>
-
-      {popup && (
-        <PopupStore
-          color={store?.options.primaryColor}
-          setPopup={setPopup}
-          imageSrc={imageSrc}
-        />
-      )}
+      <AnimatePresence>
+        {popup && (
+          <PopupStore
+            color={store?.options.primaryColor}
+            setPopup={setPopup}
+            imageSrc={imageSrc}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

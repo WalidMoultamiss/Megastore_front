@@ -92,9 +92,9 @@ export const HomeComp = ({
           </nav>
           {
             !products && (
-              <div className="flex w-full gap-3 justify-center">
+              <div className="flex w-full gap-10 justify-center flex-wrap">
                 {
-                  Array(6).fill(0).map((_, i) => (
+                  Array(8).fill(0).map((_, i) => (
                     <SkeletonProduct key={i} />
                   ))
                 }
