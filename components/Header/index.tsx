@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import CircleNotificationsIcon from "@mui/icons-material/CircleNotifications";
 import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
@@ -9,7 +9,10 @@ import { useRouter } from "next/router";
 import EditIcon from "@mui/icons-material/Edit";
 import { PrimaryBtn } from "../PrimaryBtn";
 import SearchIcon from "@mui/icons-material/Search";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { Cart } from "../Cart";
+import { AnimatedDiv } from "../AnimatedDiv";
+import { useOnClickOutside } from "@/firebase/Hooks";
 
 type Props = {
   setLoginPopup: (e: any) => void;
@@ -27,29 +30,39 @@ const Header: FC<Props> = ({
 }) => {
   const [becameSeller, setBecameSeller] = useState(true);
   const [user, setUser] = useState<any>(false);
+  const [cartTimes, setCartTimes] = useState(0);
+  const [cart, setCart] = useState(false);
 
   const Router = useRouter();
   useEffect(() => {
-    setTimeout(() => {
+    const setAddToCartTimeout = setTimeout(() => {
+      setCartTimes(cartTimes + 1);
       //@ts-ignore
       setAddToCart(false);
     }, 800);
+
+    return () => clearTimeout(setAddToCartTimeout);
   }, [addToCart]);
 
+  const cartRef = useRef<HTMLDivElement>(null);
 
+  useOnClickOutside(cartRef, () => {
+    setCart(false);
+  });
 
   return (
     <>
       <div className="header w-screen fixed top-0 left-0 bg-slate-200 shadow-lg z-50 flex p-5 justify-between">
+        <div ref={cartRef} className="absolute top-[100px] right-8 z-[88]">
+          <AnimatedDiv closer={cart}>
+            <Cart setCart={setCart} />
+          </AnimatedDiv>
+        </div>
         <div className="header__logo">
-          <Link href="/"
-          passHref
-          >
-          <h2 className="text-2xl font-black hover:text-blue-500 transition-all cursor-pointer">
-            MEGASTORE{" "}
-            {title &&
-              ` ⨉ ${title}`}
-          </h2>
+          <Link href="/" passHref>
+            <h2 className="text-2xl font-black hover:text-blue-500 transition-all cursor-pointer">
+              MEGASTORE {title && ` ⨉ ${title}`}
+            </h2>
           </Link>
         </div>
         <div className="ml-36">
@@ -90,8 +103,8 @@ const Header: FC<Props> = ({
             </Link>
           )}
 
-          <button className="relative">
-            <Badge badgeContent={1} color="primary">
+          <button onClick={() => setCart(true)} className="relative">
+            <Badge badgeContent={cartTimes} color="primary">
               <ShoppingBasketIcon className=" hover:text-blue-500 transition-all cursor-pointer" />
             </Badge>
             {addToCart && (

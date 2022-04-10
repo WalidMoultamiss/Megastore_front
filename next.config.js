@@ -7,11 +7,25 @@
 const withPWA = require('next-pwa');
 const runtimeCaching = require('next-pwa/cache');
 
+
+
+
 const settings = {
   // swcMinify: true,
   // devIndicators: {
   //   autoPrerender: false,
   // },
+  webpack: (config) => {
+    config.resolve = {
+      ...config.resolve,
+      fallback: {
+        "fs": false,
+        "path": false,
+        "os": false,
+      }
+    }
+    return config
+  },
   images: {
     domains: ['assets.example.com','i.ibb.co'],
   },

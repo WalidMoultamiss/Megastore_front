@@ -25,10 +25,10 @@ query GetStoreById($getStoreByIdId: ID!) {
     productIds {
       id
       name
-      description
       image
       price
       uuid
+      viewed
       categoryIds {
         id
         name

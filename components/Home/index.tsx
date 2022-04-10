@@ -159,7 +159,7 @@ export const HomeComp = ({
         {categories?.map((category: any) => (
           <div key={category.id}>
             <h1 className="text-3xl capitalize mb-3">{category.name}</h1>
-            <div className="flex gap-4">
+            <div className="flex flex-wrap">
               {(category.productIds || []).map((product: any) => (
                 <ProductComp key={product.id} product={product} />
               ))}

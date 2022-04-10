@@ -1,8 +1,7 @@
-query GetProductById($getProductByIdId: ID!) {
-  getProductById(id: $getProductByIdId) {
+query GetAllProductsWithPagination($inputs: pagination) {
+  getAllProductsWithPagination(inputs: $inputs) {
     id
     name
-    description
     image
     price
     uuid
@@ -10,11 +9,9 @@ query GetProductById($getProductByIdId: ID!) {
     storeId {
       id
       name
-      address
       productIds {
         id
         name
-        description
         image
         price
       }

@@ -7,6 +7,7 @@ import {
   GetAllBrandsQuery,
   GetAllCategoriesQuery,
   GetAllProductsDocument,
+  useProductViewedSubscription,
 } from "@/graphql/generated/graphql";
 import apolloClient from "@/graphql/apollo";
 import { HomeComp } from "@/components/Home";
@@ -14,7 +15,10 @@ import { LoginPopup } from "@/components/Login";
 import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import { useQuery } from "@apollo/client";
-import { io } from "socket.io-client";
+import { SubscriptionClient } from "subscriptions-transport-ws";
+import ws from "ws";
+import { useRouter } from "next/router";
+import { SubscriptionComp } from "@/components/Subscription";
 
 export type Props = {
   categories: GetAllCategoriesQuery;
@@ -30,41 +34,14 @@ const Home: NextPage<Props> = ({ categories, brands, stores }) => {
   const [progress, setProgress] = useState(0);
   const { data: products, loading, error } = useQuery(GetAllProductsDocument);
 
-  const [socket, setSocket] = useState(null);
+  const { isReady } = useRouter();
 
-  const initiateSocketConnection = () => {
-    if (!socket) setSocket(io("http://localhost:4000"));
-    console.log(`Connecting socket...`);
-  };
-
-  const disconnectSocket = () => {
-    console.log("Disconnecting socket...");
-    if (socket) socket.disconnect();
-  };
-
-  useEffect(() => {
-    initiateSocketConnection();
-    subscribeToChat((err, data) => {
-      console.log(data);
-    });
-    return () => {
-      disconnectSocket();
-    };
-  }, []);
-
-  const subscribeToChat = (cb) => {
-    socket?.emit("my message", "Hello there from React.");
-
-    socket?.on("my broadcast", (msg) => {
-      // console.log(msg);
-      return cb(null, msg);
-    });
-  };
 
   return (
     <>
       {/* <Banner /> */}
       <Header setLoginPopup={setLoginPopup} />
+      <SubscriptionComp />
       {/* @ts-ignore */}
       <HomeComp
         // @ts-ignore
@@ -81,15 +58,6 @@ const Home: NextPage<Props> = ({ categories, brands, stores }) => {
           <p>{store?.description}</p>
         </div>
       ))}
-      <button
-        onClick={() => {
-          subscribeToChat((err, data) => {
-            console.log(data);
-          });
-        }}
-        >
-        send io
-      </button>
     </>
   );
 };

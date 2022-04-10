@@ -5,6 +5,25 @@ query GetProductByUuid($uuid: String!) {
     description
     image
     price
+    viewed
+    categoryIds {
+      id
+      name
+      productIds {
+        id
+        name
+        image
+        price
+        viewed
+        uuid
+        storeId {
+          id
+          options {
+            primaryColor
+          }
+        }
+      }
+    }
     storeId {
       id
       name

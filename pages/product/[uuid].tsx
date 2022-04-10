@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 // import { GetAllProductsDocument, GetAllProductsQueryVariables } from '@/graphql/generated/graphql';
 import {
   GetProductByUuidDocument,
+  useAddViewedMutation,
   Product,
 } from "@/graphql/generated/graphql";
 import { ProductComp } from "@/components/Product";
@@ -14,6 +15,7 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Swiper, SwiperSlide } from "swiper/react";
+import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 
 // Import Swiper styles
 import "swiper/css";
@@ -45,6 +47,7 @@ const Product: NextPage<Props> = () => {
   const { query, isReady } = useRouter();
 
   const productId: any = query.uuid;
+  const [color, setColor] = useState("#000");
 
   const { data, loading, error } = useQuery(GetProductByUuidDocument, {
     variables: {
@@ -52,17 +55,36 @@ const Product: NextPage<Props> = () => {
     },
   });
 
+  const [addViewed] = useAddViewedMutation();
+
   useEffect(() => {
-    if (data) {
-      console.log(data);
+    if (data?.getProductByUuid?.id) {
+      addViewed({
+        variables: {
+          addViewedId: data?.getProductByUuid?.id,
+        },
+      });
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (data?.getProductByUuid?.storeId?.options?.primaryColor) {
+      setColor(data?.getProductByUuid?.storeId?.options?.primaryColor);
     }
   }, [data]);
 
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [addToCart, setAddToCart] = useState(false);
 
+  const handleAddToCart = (product) => {
+    const oldCart = JSON.parse(localStorage.getItem("Cart"))
+    const JSONproduct = JSON.stringify([JSON.stringify({...product,description:null})])
+    oldCart.push(JSONproduct)
+    localStorage.setItem("Cart", JSON.stringify(oldCart))
+  };
+
   return (
-    <div className="pt-10" >
+    <div className="pt-10">
       <Header
         setLoginPopup={() => {}}
         setAddToCart={setAddToCart}
@@ -127,9 +149,7 @@ const Product: NextPage<Props> = () => {
                           </span>
                         </li>
                         <li>
-                          <span
-                            className="inline-block hover:text-blue-600 cursor-pointer mr-5 text-xs font-bold font-heading uppercase text-base"
-                          >
+                          <span className="inline-block hover:text-blue-600 cursor-pointer mr-5 text-xs font-bold font-heading uppercase text-base">
                             {!data?.getProductByUuid?.storeId.id && (
                               <Skeleton variant="text" width={100} />
                             )}
@@ -225,18 +245,40 @@ const Product: NextPage<Props> = () => {
                   </div>
                   <p className="inline-block mb-8 text-2xl font-bold font-heading text-blue-300">
                     <span
-                    className="flex items-end"
+                      className="flex items-end"
                       style={{
-                        color:
-                          data?.getProductByUuid?.storeId.options.primaryColor,
+                        color: color,
                       }}
                     >
                       $ {data?.getProductByUuid.price}
-                      {!data && <Skeleton variant="rectangular"
-                    height={40} width={40}  />}
+                      {!data && (
+                        <Skeleton
+                          variant="rectangular"
+                          height={40}
+                          width={40}
+                        />
+                      )}
                     </span>
                   </p>
                 </div>
+                <span className="flex items-center mb-8 text-2xl font-bold font-heading text-blue-300">
+                  <RemoveRedEyeIcon
+                    sx={{
+                      color:
+                        data?.getProductByUuid?.storeId?.options?.primaryColor,
+                    }}
+                  />
+                  &nbsp;
+                  <span
+                    className="flex items-end"
+                    style={{
+                      color: color,
+                    }}
+                  >
+                    {data?.getProductByUuid.viewed}
+                    {!data && <Skeleton variant="text" width={30} />}
+                  </span>
+                </span>
                 <div className="flex mb-12">
                   <div className="mr-6">
                     <span className="block mb-4 font-bold font-heading text-gray-400 uppercase">
@@ -300,19 +342,20 @@ const Product: NextPage<Props> = () => {
                   <div className="w-full lg:w-1/2">
                     <motion.button
                       style={{
-                        backgroundColor:
-                          data?.getProductByUuid?.storeId.options.primaryColor,
+                        backgroundColor: color,
                       }}
-                      onClick={() => setAddToCart(true)}
+                      onClick={() => {
+                        setAddToCart(true);
+                        handleAddToCart(data?.getProductByUuid);
+                      }}
                       className="block mb-4 lg:mb-0 lg:mr-6  text-center text-white font-bold hover:scale-105 font-heading py-5 px-8 rounded-md uppercase transition duration-200"
                     >
                       Add to cart
                     </motion.button>
                   </div>
-                  
                 </div>
                 <div className="flex items-center justify-between py-6 border-b">
-                  <Accordion defaultExpanded className="w-full">
+                  <Accordion className="w-full">
                     <AccordionSummary
                       expandIcon={<ExpandMoreIcon />}
                       aria-controls="panel1a-content"
@@ -337,20 +380,54 @@ const Product: NextPage<Props> = () => {
       </section>
       <div className="mt-16">
         <div className="lg:p-10 md:p-6 p-4 bg-white dark:bg-gray-900">
-          <h3 className="text-gray-600 text-2xl font-medium">More Products</h3>
+          <h3 className="text-gray-600 text-2xl font-medium">
+            More Products from :{" "}
+            <Link
+              href={`/store/${data?.getProductByUuid.storeId?.id}`}
+              passHref
+            >
+              <span className="font-bold cursor-pointer">
+                {data?.getProductByUuid.storeId?.name}
+              </span>
+            </Link>
+          </h3>
           <div className="w-full flex flex-wrap  justify-start">
-              {data?.getProductByUuid.storeId?.productIds?.map(
-                (product: {
-                  id: string;
-                  name: string;
-                  description: string;
-                  price: string;
-                  image: string;
-                  uuid: string;
-                }) => (
-                  <ProductComp key={product.id} product={product} />
-                )
-              )}
+            {data?.getProductByUuid.storeId?.productIds?.map(
+              (product: {
+                id: string;
+                name: string;
+                description: string;
+                price: string;
+                image: string;
+                uuid: string;
+              }) => (
+                <ProductComp key={product.id} product={product} />
+              )
+            )}
+          </div>
+        </div>
+      </div>
+      <div className="mt-16">
+        <div className="lg:p-10 md:p-6 p-4 bg-white dark:bg-gray-900">
+          <h3 className="text-gray-600 text-2xl font-medium">
+            From same category:{" "}
+            <span className="font-bold capitalize">
+              {data?.getProductByUuid.categoryIds[0]?.name}
+            </span>
+          </h3>
+          <div className="w-full flex flex-wrap  justify-start">
+            {data?.getProductByUuid.categoryIds[0]?.productIds?.map(
+              (product: {
+                id: string;
+                name: string;
+                description: string;
+                price: string;
+                image: string;
+                uuid: string;
+              }) => (
+                <ProductComp key={product.id} product={product} />
+              )
+            )}
           </div>
         </div>
       </div>

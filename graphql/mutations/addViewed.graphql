@@ -1,0 +1,5 @@
+mutation addViewed($addViewedId: ID!) {
+  addViewed(id: $addViewedId) {
+    viewed
+  }
+}

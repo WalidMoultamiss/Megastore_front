@@ -1,0 +1,7 @@
+subscription productViewed {
+  productViewed {
+    id
+    name
+    viewed
+  }
+}

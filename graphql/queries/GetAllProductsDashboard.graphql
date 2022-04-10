@@ -6,6 +6,7 @@ query GetAllProductsDashboard {
     price
     uuid
     quantity
+    viewed
     storeId {
       id
       name
