@@ -311,7 +311,6 @@ const New: NextPage<Props> = ({ categories }) => {
             >
               Add images
             </PrimaryBtn>
-            
             <input
               id="file-upload"
               ref={inputRef}
