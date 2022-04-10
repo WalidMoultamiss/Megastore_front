@@ -170,31 +170,9 @@ const Product: NextPage<Props> = () => {
                     <SwipperProduct images={data?.getProductByUuid?.image} />
                   </div>
                 </div>
-                <div className="w-full lg:w-3/4 mt-12 ml-auto">
-                  <div className="flex items-center">
-                    <a className="mr-1 w-8 h-8" href="#">
-                      <img
-                        src="yofte-assets/buttons/facebook-circle.svg"
-                        alt=""
-                      />
-                    </a>
-                    <a className="mr-1 w-8 h-8" href="#">
-                      <img
-                        src="yofte-assets/buttons/instagram-circle.svg"
-                        alt=""
-                      />
-                    </a>
-                    <a className="w-8 h-8" href="#">
-                      <img
-                        src="yofte-assets/buttons/twitter-circle.svg"
-                        alt=""
-                      />
-                    </a>
-                  </div>
-                </div>
               </div>
             </div>
-            <div className="w-full md:w-1/2 px-4">
+            <div className="w-full md:w-1/2 px-4 mt-44 md:mt-0">
               <div>
                 <div className=" border-b">
                   <span className="text-gray-500">Product</span>

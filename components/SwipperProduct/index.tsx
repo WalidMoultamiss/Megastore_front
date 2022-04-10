@@ -29,7 +29,7 @@ export const SwipperProduct: FC<Props> = ({ images }) => {
         navigation={true}
         thumbs={{ swiper: thumbsSwiper }}
         modules={[FreeMode, Zoom, Navigation, Thumbs]}
-        className="mySwiper w-full h-full"
+        className="mySwiper w-full max-w-[90vw] h-full"
         pagination={{
           clickable: true,
         }}
@@ -68,7 +68,7 @@ export const SwipperProduct: FC<Props> = ({ images }) => {
         freeMode={true}
         watchSlidesProgress={true}
         modules={[FreeMode, Navigation, Thumbs]}
-        className="mySwiper mt-4"
+        className="mySwiper mt-4  max-w-[90vw]"
       >
         {images?.map((image, index) => (
           <SwiperSlide
