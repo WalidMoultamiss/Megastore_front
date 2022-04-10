@@ -52,7 +52,7 @@ const Header: FC<Props> = ({
 
   return (
     <>
-      <div className="header w-screen fixed top-0 left-0 bg-slate-200 shadow-lg z-50 flex p-5 justify-between">
+      <div className="header w-screen flex fixed top-0 left-0 bg-slate-200 shadow-lg z-50 p-5 justify-between">
         <div ref={cartRef} className="absolute top-[100px] right-8 z-[88]">
           <AnimatedDiv closer={cart}>
             <Cart setCart={setCart} />
@@ -65,7 +65,7 @@ const Header: FC<Props> = ({
             </h2>
           </Link>
         </div>
-        <div className="ml-36">
+        <div className="ml-36 hidden md:flex">
           <div className="flex justify-center items-center text-gray-600">
             <input
               type="search"
@@ -85,7 +85,7 @@ const Header: FC<Props> = ({
         <div className=" flex gap-3 ">
           {becameSeller ? (
             <Link href="/Seller" passHref={true}>
-              <button className="p-2 rounded-full hover:bg-blue-50 hover:text-blue-500 transition-all bg-blue-500 text-white px-4">
+              <button className="p-2 hidden md:flex rounded-full hover:bg-blue-50 hover:text-blue-500 transition-all bg-blue-500 text-white px-4">
                 <span>Become a seller</span>
                 <StoreIcon className=" " />
               </button>
