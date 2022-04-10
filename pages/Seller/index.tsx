@@ -14,6 +14,8 @@ const Seller: NextPage = () => {
   const [image, setImage] = useState("");
   const [user, setUser] = useState("");
   const [Toast, setToast] = useState(false);
+  const [toaster, setToaster] = useState(false);
+
 
   const [createStore, { loading }] = useCreateStoreMutation();
   const [ToasterText, setToasterText] = useState("");
@@ -209,7 +211,7 @@ const Seller: NextPage = () => {
           </div>
         </div>
       </div>
-      {Toast && <Toaster text={ToasterText} />}
+      {Toast && <Toaster setToaster={setToaster} text={ToasterText}  />}
     </div>
   );
 };

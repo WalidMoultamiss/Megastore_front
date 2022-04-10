@@ -12,7 +12,7 @@ const columns = [
 
 export const DataTable: any = () => {
   const { data , loading , error} = useQuery(GetAllProductsDashboardDocument);
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<any[]>([]);
 
   useEffect(() => {
     if (data) {

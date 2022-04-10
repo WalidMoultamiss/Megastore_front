@@ -42,7 +42,6 @@ const Home: NextPage<Props> = ({ categories, brands, stores }) => {
       {/* <Banner /> */}
       <Header setLoginPopup={setLoginPopup} />
       <SubscriptionComp />
-      {/* @ts-ignore */}
       <HomeComp
         // @ts-ignore
         products={products?.getAllProducts}

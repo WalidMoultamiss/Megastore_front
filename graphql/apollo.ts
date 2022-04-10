@@ -10,15 +10,6 @@ const httpLink = new HttpLink({
   uri: "http://localhost:4000/gql",
 });
 
-const wsLink = new GraphQLWsLink(
-  {
-    url: "ws://localhost:4000/gql",
-  }
-  // createClient({
-  //   webSocketImpl: WebSocket,
-  //   lazy: false
-  // })
-);
 
 const splitLink = split(
   ({ query }) => {
@@ -28,7 +19,6 @@ const splitLink = split(
       definition.operation === "subscription"
     );
   },
-  wsLink,
   httpLink
 );
 

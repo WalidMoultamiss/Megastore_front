@@ -15,7 +15,7 @@ export function Products() {
     setProducts(data?.getAllProducts);
   }, [data]);
 
-  const [paginationedProducts, setPaginationedProducts] = useState([]);
+  const [paginationedProducts, setPaginationedProducts] = useState<any[]>([]);
 
   useEffect(() => {
     if (products) {
@@ -27,7 +27,7 @@ export function Products() {
 
   const hundleFliter = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e?.target.value;
-    const filteredProducts = products?.filter((product) => {
+    const filteredProducts = products?.filter((product:any) => {
       return product?.name?.toLowerCase().includes(value.toLowerCase());
     });
       setPaginationedProducts(filteredProducts);
@@ -165,7 +165,7 @@ export function Products() {
                     <p className="text-xs  mt-2 text-gray-600">
                       {product?.name}
                       {"  "}৹{"  "}
-                      <Link href={`/store/${product.storeId.id}`}>
+                      <Link passHref href={`/store/${product.storeId.id}`}>
                         <span className="cursor-pointer bg-blue-100 p-1 rounded-full hover:text-blue-600">
                           {product.storeId.name}
                         </span>
@@ -194,9 +194,9 @@ export function Products() {
                     >
                       <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path>
                       <path
-                        fill-rule="evenodd"
+                        fillRule="evenodd"
                         d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
-                        clip-rule="evenodd"
+                        clipRule="evenodd"
                       ></path>
                     </svg>
                     Edit item
@@ -213,9 +213,9 @@ export function Products() {
                       xmlns="http://www.w3.org/2000/svg"
                     >
                       <path
-                        fill-rule="evenodd"
+                        fillRule="evenodd"
                         d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                        clip-rule="evenodd"
+                        clipRule="evenodd"
                       ></path>
                     </svg>
                     Delete item
@@ -239,9 +239,9 @@ export function Products() {
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  fill-rule="evenodd"
+                  fillRule="evenodd"
                   d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                  clip-rule="evenodd"
+                  clipRule="evenodd"
                 ></path>
               </svg>
             </button>
@@ -260,9 +260,9 @@ export function Products() {
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  fill-rule="evenodd"
+                  fillRule="evenodd"
                   d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                  clip-rule="evenodd"
+                  clipRule="evenodd"
                 ></path>
               </svg>
             </button>
@@ -293,9 +293,9 @@ export function Products() {
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  fill-rule="evenodd"
+                  fillRule="evenodd"
                   d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                  clip-rule="evenodd"
+                  clipRule="evenodd"
                 ></path>
               </svg>
               Previous
@@ -319,9 +319,9 @@ export function Products() {
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  fill-rule="evenodd"
+                  fillRule="evenodd"
                   d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                  clip-rule="evenodd"
+                  clipRule="evenodd"
                 ></path>
               </svg>
             </button>

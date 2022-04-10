@@ -6,7 +6,7 @@ import { LinearProgress } from "@mui/material";
 
 type Props = {
   setToaster: React.Dispatch<React.SetStateAction<boolean>>;
-  text: string;
+  text?: string;
 };
 
 const Toaster:FC<Props> = ({ text , setToaster }) =>  {
@@ -53,3 +53,8 @@ const Toaster:FC<Props> = ({ text , setToaster }) =>  {
 };
 
 export default Toaster;
+
+Toaster.defaultProps = {
+  text: "",
+  setToaster: () => {},
+};

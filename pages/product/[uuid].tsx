@@ -76,11 +76,13 @@ const Product: NextPage<Props> = () => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [addToCart, setAddToCart] = useState(false);
 
-  const handleAddToCart = (product) => {
-    const oldCart = JSON.parse(localStorage.getItem("Cart"))
-    const JSONproduct = JSON.stringify([JSON.stringify({...product,description:null})])
-    oldCart.push(JSONproduct)
-    localStorage.setItem("Cart", JSON.stringify(oldCart))
+  const handleAddToCart = (product:any) => {
+    // const oldCart = JSON.parse(localStorage.getItem("Cart"))
+    // const JSONproduct = JSON.stringify([JSON.stringify({...product,description:null})])
+    // oldCart.push(JSONproduct)
+    // localStorage.setItem("Cart", JSON.stringify(oldCart))
+    console.log("cool");
+    
   };
 
   return (

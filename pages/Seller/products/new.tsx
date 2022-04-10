@@ -42,9 +42,7 @@ const New: NextPage<Props> = ({ categories }) => {
   const [stockProgress, setStockProgress] = useState(0);
   const [editorState, setEditorState] = useState();
 
-  const {query , 
-    isReady
-  } = useRouter();
+  const { query, isReady } = useRouter();
 
   const handleFireBaseUpload = () => {
     console.log(imageAsFile);
@@ -159,12 +157,12 @@ const New: NextPage<Props> = ({ categories }) => {
   const [createProduct, { loading: createProductLoading }] =
     useCreateProductMutation();
 
-
-
   const handleCreateProduct = async () => {
-
-    const storeID = await JSON.parse(localStorage.getItem("user"))?.store?.id;
-
+    let userParsed = localStorage.getItem("user");
+    let storeID = "";
+    if (userParsed) {
+      storeID = await JSON.parse(userParsed)?.store?.id;
+    }
 
     const { data: createdProduct } = await createProduct({
       variables: {

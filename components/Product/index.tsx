@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 
 type Props = {
-  product: Product;
+  product: any;
   onDashboard?: boolean;
   color?: string;
 };
@@ -73,9 +73,6 @@ export const ProductComp: FC<Props> = ({ product, onDashboard, color }) => {
                   animate={{scale:1.5   , opacity: 0, y: -130, x: i%2 ? [0, -20, 0, -30] : i%3 ? [0, 20, 0, 30] : [0, -10, 10, -30] }}
                   transition={{ duration: 0.8 }}
                   className="absolute right-0"
-                  sx={{
-                    color: color,
-                  }}
                   key={i}
                 >
                   <RemoveRedEyeIcon />
