@@ -4,10 +4,6 @@ mutation Login($input: LoginInput) {
     firstName
     lastName
     email
-    role
     token
-    store {
-      id
-    }
   }
 }

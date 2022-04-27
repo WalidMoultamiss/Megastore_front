@@ -1,30 +1,29 @@
-import { type } from "os";
-import React from "react";
-import { useRouter } from "next/router";
-import CloseIcon from "@mui/icons-material/Close";
-import { useState } from "react";
-import { useEffect } from "react";
-import { LoginDocument, useLoginMutation } from "@/graphql/generated/graphql";
-import { gql, useMutation } from "@apollo/client";
-import Toaster from "../Toaster";
+import React, { FC, useEffect } from "react";
 import { motion } from "framer-motion";
-import { PrimaryBtn } from "../PrimaryBtn";
+import { useOnClickOutside } from "@/hooks/index";
+import { AnimatePresence } from "framer-motion";
+import CircularProgress from "@mui/material/CircularProgress";
+import { gql } from "@apollo/client";
+import { useLoginMutation } from "@/graphql/generated/graphql";
+import { useSession, getSession } from "next-auth/react"
 
-type setLoginPopup = (value: boolean) => void;
+type Props = {
+  setLoginPopup: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
-export const LoginPopup = ({
-  setLoginPopup,
-}: {
-  setLoginPopup: setLoginPopup;
-}) => {
-  const [email, setEmail] = useState("walidmoultamis@gmail.com");
-  const [password, setPassword] = useState("123");
-  const [login, { data, loading, error }] = useLoginMutation();
-  const [toaster, setToaster] = useState(false);
-  const [toasterText, setToasterText] = useState("");
+export const Login: FC<Props> = ({ setLoginPopup }) => {
+  const cardRef = React.useRef(null);
+  const [login, setLogin] = React.useState(true);
+  const [register, setRegister] = React.useState(false);
+  const [atlastrip, setAtlastrip] = React.useState(false);
+  const [loginToggle, setLoginToggle] = React.useState(false);
+  const [email, setEmail] = React.useState("walidmoultamis@gmail.com");
+  const [password, setPassword] = React.useState("123");
 
-  const handleLogin = async () => {
-    await login({
+  const [loginMutation, { data, loading, error }] = useLoginMutation();
+
+  const handleLoginGraph = () => {
+    loginMutation({
       variables: {
         input: {
           email,
@@ -34,131 +33,210 @@ export const LoginPopup = ({
     });
   };
 
-  const Router = useRouter();
 
   useEffect(() => {
-    try {
-      if (data?.login) {
-        console.log("login success", data.login);
-        setToasterText("login success");
-        //set user and token in local storage
-        localStorage.setItem("user", JSON.stringify(data.login));
-        setToaster(true);
-        Router.push(`/Personalise/store/${data?.login?.store?.id}`);
-      }
-    } catch (error) {
-      console.log(error);
-      setToasterText("login failed");
-      setToaster(true);
+    if (data?.login) {
+      setLoginPopup(false);
+      console.log(data.login);
+      localStorage.setItem("user", JSON.stringify(data.login));
+      localStorage.setItem("token", data.login.token);
     }
   }, [data]);
 
+  useOnClickOutside(cardRef, () => {
+    setLoginPopup(false);
+  });
+
   return (
-    <div className="fixed z-[100] top-0 left-0 w-full h-screen bg-black bg-opacity-20 backdrop-blur-md">
-      <span className="absolute top-0 right-0 cursor-pointer m-4">
-        <PrimaryBtn onClick={() => setLoginPopup(false)}>
-          <CloseIcon />
-        </PrimaryBtn>
-      </span>
+    <div className="fixed z-[10000] top-0 left-0 w-screen h-screen flex justify-center items-center bg-black bg-opacity-25">
       <motion.div
-        initial={{ opacity: 0, y: -100, scale: 0.5 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: -100 , scale: 0.5}}
+        initial={{ opacity: 0, y: -400 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="container mx-auto my-auto "
+        exit={{ opacity: 0, y: -400 }}
+        className="w-full relative max-w-sm bg-white rounded-lg shadow-lg overflow-hidden"
+        ref={cardRef}
       >
-        <div className="flex justify-center px-6 my-12">
-          <div className="w-full xl:w-3/4 lg:w-11/12 shadow-2xl flex">
-            <div
-              className="w-full h-auto bg-gray-400 hidden lg:block lg:w-1/2 bg-cover rounded-l-lg"
-              style={{
-                backgroundImage:
-                  "url('https://prod-cdn-thekrazycouponlady.imgix.net/wp-content/uploads/2016/08/coupon-fine-print-2022-8-1642048675-1642048675.jpg?auto=compress,format&fit=max')",
-              }}
-            ></div>
-            <div className="w-full lg:w-1/2 bg-white p-5 rounded-lg lg:rounded-l-none">
-              <h3 className="pt-4 text-2xl text-center">Welcome Back!</h3>
-              {error && (
-                <div className="text-red-500 text-center">
-                  oh no! something went wrong
-                </div>
-              )}
-              <form className="px-8 pt-6 pb-8 mb-4 bg-white rounded">
-                <div className="mb-4">
-                  <label
-                    className="block mb-2 text-sm font-bold text-gray-700"
-                    htmlFor="username"
-                  >
-                    Email
-                  </label>
-                  <input
-                    className="w-full px-3 py-2 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
-                    id="username"
-                    type="email"
-                    placeholder="Email"
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-                <div className="mb-4">
-                  <label
-                    className="block mb-2 text-sm font-bold text-gray-700"
-                    htmlFor="password"
-                  >
-                    Password
-                  </label>
-                  <input
-                    className="w-full px-3 py-2 mb-3 text-sm leading-tight text-gray-700 border border-red-500 rounded shadow appearance-none focus:outline-none focus:shadow-outline"
-                    id="password"
-                    type="password"
-                    placeholder="******************"
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                  <p className="text-xs italic text-red-500">
-                    Please choose a password.
-                  </p>
-                </div>
-                <div className="mb-4">
-                  <input
-                    className="mr-2 leading-tight"
-                    type="checkbox"
-                    id="checkbox_id"
-                  />
-                  <label className="text-sm" htmlFor="checkbox_id">
-                    Remember Me
-                  </label>
-                </div>
-                <div className="mb-6 text-center">
+        <AnimatePresence>
+          {atlastrip && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="absolute flex justify-center items-center top-0 left-0 rounded-md w-full h-full bg-green-900 bg-opacity-80 z-10"
+            >
+              <CircularProgress
+                sx={{
+                  color: "white",
+                }}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <div className="rounded-xl bg-white shadow-xl ">
+          <div className="p-6 sm:p-16">
+            {!loginToggle ? (
+              <div className="space-y-4">
+                <h2 className="mb-8 text-2xl text-cyan-900 font-bold">
+                  Sign in to unlock the best of : <br />
+                  <span className="font-extrabold"> Atlastrip Ads Maker.</span>
+                </h2>
+              </div>
+            ) : (
+              <div className="space-y-4 w-full">
+                <h2 className="mb-8 text-2xl text-center text-cyan-900 font-bold">Login</h2>
+              </div>
+            )}
+            <div className="mt-16 grid space-y-4">
+              {!loginToggle && (
+                <>
                   <button
-                    className="w-full px-4 py-2 font-bold text-white bg-blue-500 rounded-full hover:bg-blue-700 focus:outline-none focus:shadow-outline"
-                    type="button"
-                    onClick={handleLogin}
+                    onClick={() => {
+                      setAtlastrip(true);
+                    }}
+                    className="group h-12 px-6 border-2 border-solid border-gray-300 rounded-full transition duration-300 
+                                     hover:border-green-400 focus:bg-blue-50 active:bg-blue-100"
                   >
-                    Sign In
+                    <div className="relative flex items-center space-x-4 justify-center">
+                      <img
+                        src="https://atlastripv2.vercel.app/_next/image?url=%2Fog.png&w=48&q=75"
+                        className="rounded-full absolute left-0 w-5"
+                        alt="Facebook logo"
+                      />
+                      <span className="block w-max pl-3 font-semibold tracking-wide text-gray-700 text-sm transition duration-300 group-hover:text-green-600 sm:text-base">
+                        Continue with Atlastrip
+                      </span>
+                    </div>
                   </button>
-                </div>
-                <hr className="mb-6 border-t" />
-                <div className="text-center">
-                  <a
-                    className="inline-block text-sm text-blue-500 align-baseline hover:text-blue-800"
-                    href="./register.html"
+                  <button
+                    className="group h-12 px-6 border-2 border-solid border-gray-300 rounded-full transition duration-300 
+ hover:border-blue-400 focus:bg-blue-50 active:bg-blue-100"
                   >
-                    Create an Account!
-                  </a>
-                </div>
-                <div className="text-center">
-                  <a
-                    className="inline-block text-sm text-blue-500 align-baseline hover:text-blue-800"
-                    href="./htmlForgot-password.html"
+                    <div className="relative flex items-center space-x-4 justify-center">
+                      <img
+                        src="https://tailus.io/sources/blocks/social/preview/images/google.svg"
+                        className="absolute left-0 w-5"
+                        alt="google logo"
+                      />
+                      <span className="block w-max pl-3 font-semibold tracking-wide text-gray-700 text-sm transition duration-300 group-hover:text-blue-600 sm:text-base">
+                        Continue with Google
+                      </span>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setLoginToggle(true);
+                    }}
+                    className="group h-12 px-6 border-2 border-solid border-gray-300 rounded-full transition duration-300 
+                hover:border-blue-400 focus:bg-blue-50 active:bg-blue-100"
                   >
-                    htmlForgot Password?
-                  </a>
-                </div>
-              </form>
+                    <div className="relative flex items-center space-x-4 justify-center">
+                      <span className="absolute font-black left-0 w-5">AD</span>
+                      <span className="block w-max pl-3 font-semibold tracking-wide text-gray-700 text-sm transition duration-300 group-hover:text-blue-600 sm:text-base">
+                        Continue with AdsMaker
+                      </span>
+                    </div>
+                  </button>
+                </>
+              )}
+              {loginToggle && (
+                <>
+                  <div className="flex items-center border-2 border-solid border-gray-300  py-2 px-3 rounded-2xl mb-4">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 text-gray-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
+                      />
+                    </svg>
+                    <input
+                      className="pl-2 outline-none border-none"
+                      type="text"
+                      name=""
+                      id=""
+                      placeholder="Email Address"
+                      value={email}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                      }}
+                    />
+                  </div>
+                  <div className="flex items-center border-2 border-solid border-gray-300 py-2 px-3 rounded-2xl">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 text-gray-400"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <input
+                      className="pl-2 outline-none border-none"
+                      type="text"
+                      name=""
+                      id=""
+                      placeholder="Password"
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                      }}
+                      value={password}
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    onClick={handleLoginGraph}
+                    className="block w-full bg-indigo-600 mt-4 py-2 rounded-2xl text-white font-semibold mb-2"
+                  >
+                    Login
+                  </button>
+                  <span className="text-sm ml-2 hover:text-blue-500 cursor-pointer">
+                    Forgot Password ?
+                  </span>
+                  <span className="text-sm ml-2 hover:text-blue-500 cursor-pointer">
+                    Create Account
+                  </span>
+                </>
+              )}
+            </div>
+
+            <div className=" space-y-4 text-gray-600 text-center sm:-mb-8">
+              <p className="text-xs">
+                By proceeding, you agree to our{" "}
+                <a href="#" className="underline">
+                  Terms of Use
+                </a>{" "}
+                and confirm you have read our{" "}
+                <a href="#" className="underline">
+                  Privacy and Cookie Statement
+                </a>
+                .
+              </p>
+              <p className="text-xs">
+                This site is protected by reCAPTCHA and the{" "}
+                <a href="#" className="underline">
+                  Google Privacy Policy
+                </a>{" "}
+                and{" "}
+                <a href="#" className="underline">
+                  Terms of Service
+                </a>{" "}
+                apply.
+              </p>
             </div>
           </div>
         </div>
       </motion.div>
-      {toaster && <Toaster setToaster={setToaster} text={toasterText} />}
     </div>
   );
 };

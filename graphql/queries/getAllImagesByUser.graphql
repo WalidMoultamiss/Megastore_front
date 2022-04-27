@@ -1,0 +1,8 @@
+query GetAllImagesByUser($user: String!) {
+  getAllImagesByUser(user: $user) {
+    id
+    src
+    alt
+    createdAt
+  }
+}
