@@ -1,18 +1,19 @@
 import React, { useEffect, useState, useRef, useCallback, FC } from "react";
-import { AnimatePresence, motion, Target } from "framer-motion";
-import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
-import { toJpeg, toPng } from "html-to-image";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { AnimatePresence, motion } from "framer-motion";
 import WallpaperIcon from "@mui/icons-material/Wallpaper";
 import { IconButton, List, ListItemButton, ListItemText } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from "@mui/icons-material/Remove";
 import { Box } from "@mui/system";
 import html2canvas from "html2canvas";
 import { ImagesHolder } from "../ImagesHolder";
 import { SingleComponent } from "../SingleComponent";
-import { toPixelData } from "html-to-image";
 import { PrimaryBtn } from "../PrimaryBtn";
+import {
+  getDownloadURL,
+  uploadBytesResumable,
+  ref as fireRef,
+} from "@firebase/storage";
+import { storage } from "@/firebase/index";
+import { useCreateAdMutation } from "@/graphql/generated/graphql";
 
 const item = {
   hidden: { y: 20, opacity: 0 },
@@ -34,7 +35,15 @@ const container = {
   },
 };
 
-export const ImageComp = ({
+type ImageComp = {
+  imageComp: HTMLImageElement;
+  handleChangeImageComp: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  setPopupImages: (popupImages: boolean) => void;
+  //@ts-ignore
+  constraintsRef: React.MutableRefObject<Constraints>;
+};
+
+export const ImageComp: FC<ImageComp> = ({
   imageComp,
   handleChangeImageComp,
   setPopupImages,
@@ -45,6 +54,7 @@ export const ImageComp = ({
   return (
     <div
       onClick={() => {
+        //@ts-ignore
         handleChangeImageComp(imgCompRef);
       }}
       ref={imgCompRef}
@@ -59,16 +69,9 @@ export const ImageComp = ({
 };
 
 type Props = {
-  setScale: React.Dispatch<React.SetStateAction<number>>;
-  setDeleteComponent: React.Dispatch<React.SetStateAction<boolean>>;
-  scale: number;
-  children: React.ReactNode;
-  id: number;
-  Type: string;
-  setPopupImages: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export const ComponentsHolder: FC<Props> = ({ children, setScale, scale }) => {
+export const ComponentsHolder: FC<Props> = () => {
   const components = [
     "Text",
     "Button",
@@ -79,9 +82,11 @@ export const ComponentsHolder: FC<Props> = ({ children, setScale, scale }) => {
     "QrCode",
     "Html",
   ];
+  //@ts-ignore
   const constraintsRef = useRef<React.MutableRefObject<HTMLDivElement>>(true);
+  //@ts-ignore
   const [divElement, setDivElement] = useState<HTMLDivElement>(null);
-
+  //@ts-ignore
   const handleChangeImageComp = (ref) => {
     setPopupImages(true);
     setDivElement(ref);
@@ -95,20 +100,19 @@ export const ComponentsHolder: FC<Props> = ({ children, setScale, scale }) => {
   const [containerHeight, setContainerHeight] = useState(500);
   const [containerWidth, setContainerWidth] = useState(500);
   const [popupImages, setPopupImages] = useState(false);
-  const [componentsTree , setComponentsTree] = useState([]);
-  
+  const [componentsTree, setComponentsTree] = useState([]);
 
   useEffect(() => {
     console.log(componentsTree);
   }, [componentsTree]);
-
-  const setNewXY = (e , id) => {
+  //@ts-ignore
+  const setNewXY = (e, id) => {
     const { x, y } = e.target.getBoundingClientRect();
-    const newX = e.pageX - x-5;
-    const newY = e.pageY - y-13;
-    
-    console.log(componentsTree[0] , id);
-    
+    const newX = e.pageX - x - 5;
+    const newY = e.pageY - y - 13;
+
+    console.log(componentsTree[0], id);
+
     // setComponentsTree(newComponents);
   };
 
@@ -121,20 +125,15 @@ export const ComponentsHolder: FC<Props> = ({ children, setScale, scale }) => {
   }, [deleteComponent]);
 
   const AddComponent = (Type: string) => {
-    setComponentsTree(ComponentsTree => [...ComponentsTree, {
-      id: Components.length,
-      Type: Type,
-      children: [],
-      x: 0,
-      y: 0,
-      }]);
     setComponents([
+      //@ts-ignore
       ...Components,
       //@ts-ignore
       <SingleComponent
-      setNewXY={setNewXY}
+      //@ts-ignore
+        setNewXY={setNewXY}
         key={Components.length}
-        Components={Components}
+        Components={Components || []}
         setDeleteComponent={setDeleteComponent}
         id={Components.length}
         Type={Type}
@@ -147,11 +146,16 @@ export const ComponentsHolder: FC<Props> = ({ children, setScale, scale }) => {
 
   //div to png so we can say that i completed the task
   const ref = useRef(null);
+  const [createAd, { loading }] = useCreateAdMutation();
 
   const handleDownloadImage = () => {
-    
-    html2canvas(constraintsRef.current,{ allowTaint: true, useCORS: true, logging: true }).then((canvas) => {
-      const imgData = canvas.toDataURL("image/jpeg",1.0 );
+    //@ts-ignore
+    html2canvas(constraintsRef.current, {
+      allowTaint: true,
+      useCORS: true,
+      logging: true,
+    }).then((canvas) => {
+      const imgData = canvas.toDataURL("image/jpeg", 1.0);
       const img = new Image();
       img.src = imgData;
       img.onload = () => {
@@ -160,32 +164,82 @@ export const ComponentsHolder: FC<Props> = ({ children, setScale, scale }) => {
         canvas.height = img.height;
         const ctx = canvas.getContext("2d");
         ctx?.drawImage(img, 0, 0);
-        const imgData = canvas.toDataURL("image/jpeg",1.0 );
+        const imgData = canvas.toDataURL("image/jpeg", 1.0);
         const a = document.createElement("a");
         a.href = imgData;
         a.download = "image.jpeg";
         a.click();
+        const userId = JSON.parse(localStorage.getItem("user") || "").id;
+        console.log(imgData);
+
+        createAd({
+          variables: {
+            input: {
+              title: "title",
+              user: userId,
+              width: 500,
+              height: 500,
+              viewCount: 0,
+              isPremium: false,
+              json: "   ",
+              adImage: imgData,
+            },
+          },
+        });
+
+        // setImageAsFile(img);
+        // handleFireBaseUpload();
       };
     });
   };
-
-  
-  
-  
-
-
 
   const handleChangeImage = (e: any) => {
     const newImage = e.target.files[0];
     const newUrl = URL.createObjectURL(newImage);
     if (!constraintsRef === null) {
+      //@ts-ignore
       constraintsRef?.current?.style.backgroundImage = `url("${newUrl}")`;
     }
   };
 
   //inputRef
   const inputRef = useRef(null);
-  const [dataImg , setDataImg] = useState("");
+  const [dataImg, setDataImg] = useState("");
+  const [imageAsFile, setImageAsFile] = useState(null);
+  const [imageIsLoading, setImageIsLoading] = useState(false);
+
+  const handleFireBaseUpload = () => {
+    setImageIsLoading(true);
+
+    if (!imageAsFile) {
+      return alert("await image");
+    } else {
+      // @ts-ignore
+      const storageRef = fireRef(
+        storage,
+        `/templates/${Math.floor(Math.random() * 100)}`
+      );
+      const uploadTask = uploadBytesResumable(storageRef, imageAsFile);
+
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          return console.log(snapshot);
+        },
+        (error) => {
+          console.log(error);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+            console.log(url);
+            setTimeout(() => {
+              setImageIsLoading(false);
+            }, 1200);
+          });
+        }
+      );
+    }
+  };
 
   return (
     <div className="flex gap-3 w-full pb-6">
@@ -259,9 +313,7 @@ export const ComponentsHolder: FC<Props> = ({ children, setScale, scale }) => {
       >
         Export
       </button>
-      <PrimaryBtn
-        className="absolute top-40 right-6 p-4 rounded-lg bg-purple-800 text-white" 
-      >
+      <PrimaryBtn className="absolute top-40 right-6 p-4 rounded-lg bg-purple-800 text-white">
         Save template
       </PrimaryBtn>
 
@@ -291,7 +343,7 @@ export const ComponentsHolder: FC<Props> = ({ children, setScale, scale }) => {
                 />
               ))}
           </div>
-          
+
           <motion.div
             transition={{ duration: 0.5 }}
             style={{
@@ -301,12 +353,11 @@ export const ComponentsHolder: FC<Props> = ({ children, setScale, scale }) => {
               height: containerHeight,
             }}
             className="container transition-all relative item mask-square bg-white bg-center bg-cover"
+            //@ts-ignore
             ref={constraintsRef}
-            
           >
             {Components.map((component, index) => [component])}
           </motion.div>
-          
         </div>
         <div className="px-1 h-full">
           <div className="relative">
@@ -337,6 +388,7 @@ export const ComponentsHolder: FC<Props> = ({ children, setScale, scale }) => {
                   </ListItemButton>
                   <ListItemButton
                     onClick={() => {
+                      //@ts-ignore
                       constraintsRef?.current?.style?.backgroundImage = "";
                     }}
                   >
@@ -358,6 +410,7 @@ export const ComponentsHolder: FC<Props> = ({ children, setScale, scale }) => {
       <AnimatePresence>
         {popupImages && (
           <ImagesHolder
+            //@ts-ignore
             constraintsRef={divElement}
             setPopupImages={setPopupImages}
           />

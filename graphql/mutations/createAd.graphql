@@ -1,0 +1,17 @@
+mutation createAd($input: AdInput!) {
+  createAd(input: $input) {
+    id
+    title
+    user {
+      id
+      firstName
+    }
+    width
+    json
+    adImage
+    height
+    viewCount
+    isPremium
+    createdAt
+  }
+}

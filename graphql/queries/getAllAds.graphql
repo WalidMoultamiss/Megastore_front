@@ -1,0 +1,12 @@
+query GetAllAds {
+  getAllAds {
+    id
+    adImage
+    title
+    isPremium
+    user {
+      id
+      firstName
+    }
+  }
+}

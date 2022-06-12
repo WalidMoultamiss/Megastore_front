@@ -17,13 +17,12 @@ export type Scalars = {
 
 export type Ad = {
   __typename?: 'Ad';
-  bgColor?: Maybe<Scalars['String']>;
-  bgImage: Image;
-  components: Array<Component>;
+  adImage: Scalars['String'];
   createdAt: Scalars['String'];
   height: Scalars['Int'];
   id: Scalars['ID'];
   isPremium: Scalars['Boolean'];
+  json: Scalars['String'];
   title: Scalars['String'];
   user: User;
   viewCount: Scalars['Int'];
@@ -31,14 +30,13 @@ export type Ad = {
 };
 
 export type AdInput = {
-  bgColor?: InputMaybe<Scalars['String']>;
-  bgImage: Scalars['ID'];
-  components: Array<Scalars['ID']>;
+  adImage: Scalars['String'];
   height: Scalars['Int'];
-  isPremium: Scalars['Boolean'];
+  isPremium?: InputMaybe<Scalars['Boolean']>;
+  json: Scalars['String'];
   title: Scalars['String'];
   user: Scalars['ID'];
-  viewCount: Scalars['Int'];
+  viewCount?: InputMaybe<Scalars['Int']>;
   width: Scalars['Int'];
 };
 
@@ -302,12 +300,24 @@ export type UserInput = {
   password?: InputMaybe<Scalars['String']>;
 };
 
+export type CreateAdMutationVariables = Exact<{
+  input: AdInput;
+}>;
+
+
+export type CreateAdMutation = { __typename?: 'Mutation', createAd?: { __typename?: 'Ad', id: string, title: string, width: number, json: string, adImage: string, height: number, viewCount: number, isPremium: boolean, createdAt: string, user: { __typename?: 'User', id: string, firstName: string } } | null };
+
 export type CreateImageMutationVariables = Exact<{
   input?: InputMaybe<ImageInput>;
 }>;
 
 
 export type CreateImageMutation = { __typename?: 'Mutation', createImage?: { __typename?: 'Image', id: string, src: string, alt: string, user: string, createdAt: string } | null };
+
+export type GetAllAdsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllAdsQuery = { __typename?: 'Query', getAllAds?: Array<{ __typename?: 'Ad', id: string, adImage: string, title: string, isPremium: boolean, user: { __typename?: 'User', id: string, firstName: string } } | null> | null };
 
 export type LoginMutationVariables = Exact<{
   input?: InputMaybe<LoginInput>;
@@ -324,6 +334,51 @@ export type GetAllImagesByUserQueryVariables = Exact<{
 export type GetAllImagesByUserQuery = { __typename?: 'Query', getAllImagesByUser?: Array<{ __typename?: 'Image', id: string, src: string, alt: string, createdAt: string } | null> | null };
 
 
+export const CreateAdDocument = gql`
+    mutation createAd($input: AdInput!) {
+  createAd(input: $input) {
+    id
+    title
+    user {
+      id
+      firstName
+    }
+    width
+    json
+    adImage
+    height
+    viewCount
+    isPremium
+    createdAt
+  }
+}
+    `;
+export type CreateAdMutationFn = Apollo.MutationFunction<CreateAdMutation, CreateAdMutationVariables>;
+
+/**
+ * __useCreateAdMutation__
+ *
+ * To run a mutation, you first call `useCreateAdMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateAdMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createAdMutation, { data, loading, error }] = useCreateAdMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateAdMutation(baseOptions?: Apollo.MutationHookOptions<CreateAdMutation, CreateAdMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateAdMutation, CreateAdMutationVariables>(CreateAdDocument, options);
+      }
+export type CreateAdMutationHookResult = ReturnType<typeof useCreateAdMutation>;
+export type CreateAdMutationResult = Apollo.MutationResult<CreateAdMutation>;
+export type CreateAdMutationOptions = Apollo.BaseMutationOptions<CreateAdMutation, CreateAdMutationVariables>;
 export const CreateImageDocument = gql`
     mutation CreateImage($input: ImageInput) {
   createImage(input: $input) {
@@ -361,6 +416,47 @@ export function useCreateImageMutation(baseOptions?: Apollo.MutationHookOptions<
 export type CreateImageMutationHookResult = ReturnType<typeof useCreateImageMutation>;
 export type CreateImageMutationResult = Apollo.MutationResult<CreateImageMutation>;
 export type CreateImageMutationOptions = Apollo.BaseMutationOptions<CreateImageMutation, CreateImageMutationVariables>;
+export const GetAllAdsDocument = gql`
+    query GetAllAds {
+  getAllAds {
+    id
+    adImage
+    title
+    user {
+      id
+      firstName
+    }
+    isPremium
+  }
+}
+    `;
+
+/**
+ * __useGetAllAdsQuery__
+ *
+ * To run a query within a React component, call `useGetAllAdsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAllAdsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAllAdsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetAllAdsQuery(baseOptions?: Apollo.QueryHookOptions<GetAllAdsQuery, GetAllAdsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAllAdsQuery, GetAllAdsQueryVariables>(GetAllAdsDocument, options);
+      }
+export function useGetAllAdsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAllAdsQuery, GetAllAdsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAllAdsQuery, GetAllAdsQueryVariables>(GetAllAdsDocument, options);
+        }
+export type GetAllAdsQueryHookResult = ReturnType<typeof useGetAllAdsQuery>;
+export type GetAllAdsLazyQueryHookResult = ReturnType<typeof useGetAllAdsLazyQuery>;
+export type GetAllAdsQueryResult = Apollo.QueryResult<GetAllAdsQuery, GetAllAdsQueryVariables>;
 export const LoginDocument = gql`
     mutation Login($input: LoginInput) {
   login(input: $input) {

@@ -2,7 +2,12 @@ import React, { FC, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { CircularProgress, LinearProgress } from "@mui/material";
 import { storage } from "@/firebase/index";
-import { ref, uploadBytesResumable, getDownloadURL, getBlob } from "@firebase/storage";
+import {
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+  getBlob,
+} from "@firebase/storage";
 import { PrimaryBtn } from "../PrimaryBtn";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import PublicIcon from "@mui/icons-material/Public";
@@ -32,11 +37,14 @@ export const ImagesHolder: FC<Props> = ({ setPopupImages, constraintsRef }) => {
   const [leftOverlay, setLeftOverlay] = useState(0);
   const [topOverlay, setTopOverlay] = useState(0);
 
-  const { data, loading, error , refetch } = useQuery(GetAllImagesByUserDocument, {
-    variables: {
-      user: userId,
-    },
-  });
+  const { data, loading, error, refetch } = useQuery(
+    GetAllImagesByUserDocument,
+    {
+      variables: {
+        user: userId,
+      },
+    }
+  );
 
   refetch();
 
@@ -45,8 +53,11 @@ export const ImagesHolder: FC<Props> = ({ setPopupImages, constraintsRef }) => {
 
   useEffect(() => {
     if (localStorage) {
+      //@ts-ignore
       JSON.parse(localStorage?.getItem("user")).id
-        ? setUserId(JSON.parse(localStorage?.getItem("user")).id)
+        ? //@ts-ignore
+
+          setUserId(JSON.parse(localStorage?.getItem("user")).id)
         : setUserId("");
     }
   }, []);
@@ -146,8 +157,6 @@ export const ImagesHolder: FC<Props> = ({ setPopupImages, constraintsRef }) => {
     },
   };
 
-  
-
   return (
     <div className="w-screen h-screen fixed flex top-0 left-0 justify-center items-center  z-[99999] bg-black bg-opacity-20">
       <motion.div
@@ -227,8 +236,10 @@ export const ImagesHolder: FC<Props> = ({ setPopupImages, constraintsRef }) => {
                     onClick={() => {
                       setPrimaryImage(i);
                       if (src) {
+                        //@ts-ignore
                         setPrimaryImageSrc(src);
-                        constraintsRef.current?.style.backgroundImage = `url(${src})`;
+                        //@ts-ignore
+                        constraintsRef?.current?.style?.backgroundImage = `url(${src})`;
                       }
                     }}
                     className={`p-16 rounded relative bg-slate-300 bg-no-repeat bg-cover bg-center  cursor-pointer border-8   border-solid ${

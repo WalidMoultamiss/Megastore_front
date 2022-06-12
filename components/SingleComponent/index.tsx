@@ -8,16 +8,23 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import { ImageComp } from "../ComponentsHolder";
 import { QRCodeSVG } from "qrcode.react";
 import { ResizableComp } from "../ResizableComp";
-import { RotatableComp } from "../RotatableComp";
 
-export const SingleComponent: FC<Props> = ({
+export const SingleComponent = ({
+  // @ts-ignore
   setDeleteComponent,
+  // @ts-ignore
   id,
+  // @ts-ignore
   setNewXY,
+  // @ts-ignore
   Type,
+  // @ts-ignore
   setPopupImages,
+  // @ts-ignore
   handleChangeImageComp,
+  // @ts-ignore
   constraintsRef,
+  // @ts-ignore
   Components,
 }) => {
   const [componentHover, setComponentHover] = useState(false);
@@ -47,6 +54,7 @@ export const SingleComponent: FC<Props> = ({
 
   return (
     <motion.div
+      //@ts-ignore
       ref={currentCompRef}
       style={{
         position: "absolute",
@@ -59,6 +67,7 @@ export const SingleComponent: FC<Props> = ({
       // }}
 
       onDragEnd={(e) => {
+        //@ts-ignore
         setNewXY(e, id);
       }}
       dragConstraints={constraintsRef}
@@ -108,12 +117,14 @@ export const SingleComponent: FC<Props> = ({
         ) : Type === "Image" ? (
           <ImageComp
             handleChangeImageComp={handleChangeImageComp}
+            //@ts-ignore
             imageComp={imageComp}
             setPopupImages={setPopupImages}
           />
         ) : Type === "QrCode" ? (
           <div className="object-cover object-center">
             <QRCodeSVG
+              //@ts-ignore
               imageSettings={{
                 src: "https://www.w3schools.com/w3images/avatar2.png",
                 width: 20,
@@ -146,6 +157,7 @@ export const SingleComponent: FC<Props> = ({
           </label>
           <DeleteIcon
             onClick={() => {
+              //@ts-ignore
               setDeleteComponent(id);
             }}
             sx={{ color: "red" }}

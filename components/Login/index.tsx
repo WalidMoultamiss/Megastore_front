@@ -6,6 +6,8 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { gql } from "@apollo/client";
 import { useLoginMutation } from "@/graphql/generated/graphql";
 import { useSession, getSession } from "next-auth/react"
+import { useRouter } from "next/router";
+
 
 type Props = {
   setLoginPopup: React.Dispatch<React.SetStateAction<boolean>>;
@@ -19,6 +21,8 @@ export const Login: FC<Props> = ({ setLoginPopup }) => {
   const [loginToggle, setLoginToggle] = React.useState(false);
   const [email, setEmail] = React.useState("walidmoultamis@gmail.com");
   const [password, setPassword] = React.useState("123");
+
+  const router = useRouter();
 
   const [loginMutation, { data, loading, error }] = useLoginMutation();
 
@@ -36,10 +40,14 @@ export const Login: FC<Props> = ({ setLoginPopup }) => {
 
   useEffect(() => {
     if (data?.login) {
-      setLoginPopup(false);
       console.log(data.login);
       localStorage.setItem("user", JSON.stringify(data.login));
       localStorage.setItem("token", data.login.token);
+
+      // navigate to home page
+      router.push("/Editor");
+      
+      setLoginPopup(false);
     }
   }, [data]);
 

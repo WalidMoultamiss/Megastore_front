@@ -3,6 +3,8 @@ import { ComponentsHolder } from "@/components/index";
 import { motion } from "framer-motion";
 import { Card } from "../Templates/Card";
 import { type } from "os";
+import { GetAllAdsDocument } from "@/graphql/generated/graphql";
+import { useQuery } from "@apollo/client";
 
 const item = {
   hidden: { y: 20, opacity: 0 },
@@ -26,14 +28,16 @@ const container = {
 
 type Props = {
   show: boolean;
-}
+};
 
-export const DashboardContent:FC<Props> = ({ show }) => {
+export const DashboardContent: FC<Props> = ({ show }) => {
   const [reload, setReload] = useState(0);
 
   useEffect(() => {
     console.log(reload);
   }, [reload]);
+
+  const { data, loading, error, refetch } = useQuery(GetAllAdsDocument);
 
   const [livraisons, setLivraisons] = useState([]);
   const [drivers, setDrivers] = useState([]);
@@ -116,9 +120,11 @@ export const DashboardContent:FC<Props> = ({ show }) => {
         initial="hidden"
         animate="visible"
       >
-        {cardsOptions.map((card, index) => (
+        {
+        //@ts-ignore
+        data?.getAllAds?.map((card, index) => (
           <motion.li key={index} className="carousel-item" variants={item}>
-            <Card options={card} />
+            <Card options={{...card , colors : [{ hex: "brown" }, { hex: "orange" }, { hex: "grey" }] }} />
           </motion.li>
         ))}
       </motion.ul>

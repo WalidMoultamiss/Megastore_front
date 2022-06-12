@@ -14,7 +14,6 @@ import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
 import DraftsIcon from "@mui/icons-material/Drafts";
 import AutoFixHighIcon from "@mui/icons-material/AutoFixHigh";
 import BuildIcon from "@mui/icons-material/Build";
@@ -27,7 +26,7 @@ import { motion } from "framer-motion";
 import { ComponentsHolder } from "@/components/index";
 
 const drawerWidth = 240;
-
+//@ts-ignore
 const openedMixin = (theme) => ({
   width: drawerWidth,
   transition: theme.transitions.create("width", {
@@ -37,6 +36,7 @@ const openedMixin = (theme) => ({
   overflowX: "hidden",
 });
 
+//@ts-ignore
 const closedMixin = (theme) => ({
   transition: theme.transitions.create("width", {
     easing: theme.transitions.easing.sharp,
@@ -60,6 +60,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
+  //@ts-ignore
 })(({ theme, open }) => ({
   zIndex: theme.zIndex.drawer + 1,
   transition: theme.transitions.create(["width", "margin"], {
@@ -76,8 +77,10 @@ const AppBar = styled(MuiAppBar, {
   }),
 }));
 
+//@ts-ignore
 const Drawer = styled(MuiDrawer, {
   shouldForwardProp: (prop) => prop !== "open",
+  //@ts-ignore
 })(({ theme, open }: { open: boolean; theme: any }) => ({
   width: drawerWidth,
   flexShrink: 0,
@@ -96,6 +99,12 @@ const Drawer = styled(MuiDrawer, {
 const Editor = () => {
   const theme = useTheme();
   const [show, setShow] = React.useState("livraison");
+  const [userName, setUserName] = React.useState("");
+
+  React.useEffect(() => {
+    //@ts-ignore
+    setUserName(JSON?.parse(localStorage?.getItem("user")).firstName || "");
+  }, []);
 
   const [open, setOpen] = React.useState(false);
 
@@ -130,7 +139,10 @@ const Editor = () => {
         </div>
       )}
       <CssBaseline />
-      <AppBar position="fixed" open={open}>
+      {/* //@ts-ignore */}
+      <AppBar position="fixed" 
+      //@ts-ignore - this is a hack to make the appbar not to be hidden by the drawer
+      open={open}>
         <Toolbar>
           <IconButton
             color="inherit"
@@ -144,9 +156,14 @@ const Editor = () => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            Atlastrip Ads Editor
-          </Typography>
+          <div className="w-full px-3 flex justify-between">
+            <Typography variant="h6" noWrap component="div">
+              Atlastrip Ads Editor
+            </Typography>
+            <div className="bg-white text-blue-700 rounded-full w-10 h-10 flex justify-center items-center font-bold ">
+              {userName[0]?.toUpperCase()}
+            </div>
+          </div>
         </Toolbar>
       </AppBar>
       <Drawer variant="permanent" open={open}>
@@ -157,7 +174,7 @@ const Editor = () => {
         </DrawerHeader>
         <Divider />
         <List>
-          {["Home", "Magic search", "Options"].map((text, index) => (
+          {["dashboard", "Magic search", "Options"].map((text, index) => (
             <Link key={index} passHref href={`/${text}`}>
               <ListItem
                 onClick={() => {
@@ -204,7 +221,8 @@ const Editor = () => {
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
         <div className="max-w-[90vw] overflow-hidden hidden md:block">
-          <ComponentsHolder setScale={setScale} scale={scale} />
+          {/* //@ts-ignore */}
+          <ComponentsHolder  />
         </div>
       </Box>
     </Box>

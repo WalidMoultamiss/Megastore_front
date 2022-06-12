@@ -22,11 +22,11 @@ const style = {
 };
 
 export const Card = ({ options }) => {
-  const colors = options.colors;
-  const title = options.title;
-  const isFree = options.isFree;
-  const category = options.category;
-  const src = options.src;
+  const colors = options?.colors;
+  const title = options?.title;
+  const isFree = options?.isPremium;
+  const category = options?.category;
+  const src = options?.adImage;
 
   const Details = () => {
     return (
