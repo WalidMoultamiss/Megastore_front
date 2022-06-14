@@ -1,5 +1,4 @@
 import React, { FC, useEffect, useState } from "react";
-import { ComponentsHolder } from "@/components/index";
 import { motion } from "framer-motion";
 import { Card } from "../Templates/Card";
 import { type } from "os";
@@ -44,76 +43,13 @@ export const DashboardContent: FC<Props> = ({ show }) => {
   const [SelectedDriverFromTable, setSelectedDriverFromTable] = useState();
   const [selectedLivraisonFromTable, setSelectedLivraisonFromTable] =
     useState();
+    refetch();
+    const [image , setImage] = useState('');
 
-  const cardsOptions = [
-    {
-      title: "Grow your business",
-      colors: [{ hex: "#660066" }, { hex: "darkblue" }, { hex: "yellow" }],
-      isFree: true,
-      category: "Intermediate",
-      src: "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/business-ads-design-template-be6d9131564f6f8d391ae81eb3ce55dc_screen.jpg?ts=1613467699",
-    },
-    {
-      title: "Livraisons en cours",
-      colors: [{ hex: "#b1d3f1" }, { hex: "#fafaf8" }, { hex: "#0171a1" }],
-      isFree: false,
-      category: "Intermediate",
-      src: "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/business-services-ads-design-template-549dcc027b59bf362c61b9da6f08f035_screen.jpg?ts=1619586131",
-    },
-    {
-      title: "Livraisons en cours",
-      colors: [{ hex: "brown" }, { hex: "orange" }, { hex: "grey" }],
-      isFree: false,
-      category: "Beginner Friendly",
-      src: "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/digital-marketing-banner-for-instagram-ads-design-template-f04c1e6d642543cd012e491aacdbcd6c_screen.jpg?ts=1597461567",
-    },
-    {
-      title: "Grow your business",
-      colors: [{ hex: "#660066" }, { hex: "darkblue" }, { hex: "yellow" }],
-      isFree: true,
-      category: "Intermediate",
-      src: "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/business-ads-design-template-be6d9131564f6f8d391ae81eb3ce55dc_screen.jpg?ts=1613467699",
-    },
-    {
-      title: "Livraisons en cours",
-      colors: [{ hex: "#b1d3f1" }, { hex: "#fafaf8" }, { hex: "#0171a1" }],
-      isFree: false,
-      category: "Intermediate",
-      src: "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/business-services-ads-design-template-549dcc027b59bf362c61b9da6f08f035_screen.jpg?ts=1619586131",
-    },
-    {
-      title: "Livraisons en cours",
-      colors: [{ hex: "brown" }, { hex: "orange" }, { hex: "grey" }],
-      isFree: false,
-      category: "Beginner Friendly",
-      src: "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/digital-marketing-banner-for-instagram-ads-design-template-f04c1e6d642543cd012e491aacdbcd6c_screen.jpg?ts=1597461567",
-    },
-    {
-      title: "Grow your business",
-      colors: [{ hex: "#660066" }, { hex: "darkblue" }, { hex: "yellow" }],
-      isFree: true,
-      category: "Intermediate",
-      src: "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/business-ads-design-template-be6d9131564f6f8d391ae81eb3ce55dc_screen.jpg?ts=1613467699",
-    },
-    {
-      title: "Livraisons en cours",
-      colors: [{ hex: "#b1d3f1" }, { hex: "#fafaf8" }, { hex: "#0171a1" }],
-      isFree: false,
-      category: "Intermediate",
-      src: "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/business-services-ads-design-template-549dcc027b59bf362c61b9da6f08f035_screen.jpg?ts=1619586131",
-    },
-    {
-      title: "Livraisons en cours",
-      colors: [{ hex: "brown" }, { hex: "orange" }, { hex: "grey" }],
-      isFree: false,
-      category: "Beginner Friendly",
-      src: "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/digital-marketing-banner-for-instagram-ads-design-template-f04c1e6d642543cd012e491aacdbcd6c_screen.jpg?ts=1597461567",
-    },
-  ];
 
   return (
     <div className="">
-      <h1 className="title font-bold text-5xl mb-4">Templates</h1>
+      <h1 className="title font-bold text-5xl mb-4">Ads</h1>
       <motion.ul
         variants={container}
         className="p-4 space-x-4 max-w-screen carousel carousel-center bg-gray-100 rounded-box"
@@ -121,13 +57,31 @@ export const DashboardContent: FC<Props> = ({ show }) => {
         animate="visible"
       >
         {
-        //@ts-ignore
-        data?.getAllAds?.map((card, index) => (
-          <motion.li key={index} className="carousel-item" variants={item}>
-            <Card options={{...card , colors : [{ hex: "brown" }, { hex: "orange" }, { hex: "grey" }] }} />
-          </motion.li>
-        ))}
+          //@ts-ignore
+          data?.getAllAds?.map((card, index) => (
+            <motion.li key={index} className="carousel-item" variants={item}>
+              <Card
+                setImage={setImage}
+                options={{
+                  ...card,
+                  colors: [
+                    { hex: "brown" },
+                    { hex: "orange" },
+                    { hex: "grey" },
+                  ],
+                }}
+              />
+            </motion.li>
+          ))
+        }
       </motion.ul>
+      <div></div>
+      <input type="checkbox" id="my-modal-4" className="modal-toggle" />
+      <label htmlFor="my-modal-4" className="modal cursor-pointer w-screen h-screen z-[5000]">
+        <label className="modal-box relative flex justify-center items-center w-full" htmlFor="">
+          <img src={image} className="w-96 h-96  rounded-lg" />
+        </label>
+      </label>
     </div>
   );
 };

@@ -3,8 +3,6 @@ import { AnimatePresence, motion, Target } from "framer-motion";
 import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { IconButton, List, ListItemButton, ListItemText } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from "@mui/icons-material/Remove";
 import { ImageComp } from "../ComponentsHolder";
 import { QRCodeSVG } from "qrcode.react";
 import { ResizableComp } from "../ResizableComp";
@@ -33,7 +31,7 @@ export const SingleComponent = ({
   const [leftComp, setLeftComp] = useState(0);
   const [topComp, setTopComp] = useState(0);
 
-  const [customTW, setCustomTW] = useState("relative w-fit h-fit");
+  const [customTW, setCustomTW] = useState("tailwind here");
 
   const [open, setOpen] = React.useState(true);
   const [draggable, setDraggable] = useState(true);
@@ -60,7 +58,7 @@ export const SingleComponent = ({
         position: "absolute",
       }}
       key={Components.length}
-      className={`item cursor-move w-fit`}
+      className={`item cursor-move w-fit `}
       drag={draggable}
       // onDrag={(e) => {
       //   setNewXY(e, id);
@@ -120,9 +118,10 @@ export const SingleComponent = ({
             //@ts-ignore
             imageComp={imageComp}
             setPopupImages={setPopupImages}
+            customTW = {customTW}
           />
         ) : Type === "QrCode" ? (
-          <div className="object-cover object-center">
+          <div className={`object-cover object-center ${customTW}`}>
             <QRCodeSVG
               //@ts-ignore
               imageSettings={{
@@ -138,6 +137,8 @@ export const SingleComponent = ({
               size={100}
             />
           </div>
+        ) :Type === "Rect" ? (
+          <div className={`w-full h-full bg-black ${customTW}`} />
         ) : null}
       </ResizableComp>
 

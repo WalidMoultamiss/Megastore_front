@@ -2,26 +2,25 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Tooltip } from "@mui/material";
 import { useRef } from "react";
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import Modal from '@mui/material/Modal';
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import Modal from "@mui/material/Modal";
 import Link from "next/link";
 
-
 const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
   width: 400,
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
+  bgcolor: "background.paper",
+  border: "2px solid #000",
   boxShadow: 24,
   p: 4,
 };
 
-export const Card = ({ options }) => {
+export const Card = ({ options , setImage }) => {
   const colors = options?.colors;
   const title = options?.title;
   const isFree = options?.isPremium;
@@ -106,14 +105,18 @@ export const Card = ({ options }) => {
   const handleClose = () => setOpen(false);
 
   return (
-    <Link passHref href={'/Editor'}>
-    <motion.div onClick={handleOpen} className="max-w-sm cursor-pointer bg-white px-6 pt-6 pb-6 rounded-xl shadow-lg transform hover:shadow-2xl transition duration-500">
+    <motion.label
+      htmlFor="my-modal-4"
+      type="button"
+      onClick={()=>setImage(src)}
+      className="max-w-sm cursor-pointer bg-white px-6 pt-6 pb-6 rounded-xl shadow-lg transform hover:shadow-2xl transition duration-500"
+    >
       <h3 className="mb-3 text-xl font-bold text-indigo-600">{category}</h3>
       <div className="relative">
         <div className="w-64 object-cover">
-        <img className="w-full h-full rounded-xl" src={src} alt="Colors" />
+          <img className="w-full h-full rounded-xl" src={src} alt="Colors" />
         </div>
-        {!isFree && (
+        {isFree && (
           <p className="absolute top-0 shadow-md bg-yellow-300 text-gray-800 font-semibold py-1 px-3 rounded-br-lg rounded-tl-lg">
             PREMIUM
           </p>
@@ -149,12 +152,10 @@ export const Card = ({ options }) => {
           </div>
         </Tooltip>
         <h2 className="text-sm tracking-tighter  ml-4 text-gray-900">
-          By Mohammed Ibrahim <span className="text-gray-600">21 SEP 2015.</span>
+          By {options.user.firstName} {options.user.lastName}{" "}
+          <span className="text-gray-600">{options.createdAt}</span>
         </h2>
       </div>
-      <div>
-    </div>
-    </motion.div>
-    </Link>
+    </motion.label>
   );
 };

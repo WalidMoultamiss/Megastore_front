@@ -41,6 +41,7 @@ type ImageComp = {
   setPopupImages: (popupImages: boolean) => void;
   //@ts-ignore
   constraintsRef: React.MutableRefObject<Constraints>;
+  customTW: string;
 };
 
 export const ImageComp: FC<ImageComp> = ({
@@ -48,6 +49,7 @@ export const ImageComp: FC<ImageComp> = ({
   handleChangeImageComp,
   setPopupImages,
   constraintsRef,
+  customTW
 }) => {
   const imgCompRef = useRef(null);
 
@@ -60,10 +62,10 @@ export const ImageComp: FC<ImageComp> = ({
       ref={imgCompRef}
       style={{
         backgroundImage: `url("https://source.unsplash.com/random")`,
-        backgroundSize: "90%",
+        backgroundSize: "100%",
         backgroundRepeat: "no-repeat",
       }}
-      className="w-full h-full bg-cover bg-center "
+      className={`w-full h-full bg-cover bg-center ${customTW}`}
     ></div>
   );
 };
@@ -81,6 +83,7 @@ export const ComponentsHolder: FC<Props> = () => {
     "Image",
     "QrCode",
     "Html",
+    "Rect",
   ];
   //@ts-ignore
   const constraintsRef = useRef<React.MutableRefObject<HTMLDivElement>>(true);
@@ -207,6 +210,30 @@ export const ComponentsHolder: FC<Props> = () => {
   const [dataImg, setDataImg] = useState("");
   const [imageAsFile, setImageAsFile] = useState(null);
   const [imageIsLoading, setImageIsLoading] = useState(false);
+  const [hikes , setHikes] = useState([]);
+
+
+  useEffect(() => {
+    var myHeaders = new Headers();
+myHeaders.append("Authorization", "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxNmY1MTBhMDUyMTE0MDAxNmQ0Y2EzOSIsImVtYWlsIjoid2FsaWRtb3VsdGFtaXNAZ21haWwuY29tIiwiaWF0IjoxNjU1MjI1MTY4LCJleHAiOjE2ODY3NjExNjh9.qLOJ6JQoelmljTZ_3DMj_deeoSmBJreR2x1Bd-I0iO8");
+myHeaders.append("Content-Type", "application/json");
+
+var graphql = JSON.stringify({
+  query: "query Hikes {\r\n  hikes {\r\n    id\r\n    name\r\n    image {\r\n      src\r\n    }\r\n  }\r\n}",
+  variables: {}
+})
+var requestOptions = {
+  method: 'POST',
+  headers: myHeaders,
+  body: graphql,
+};
+
+fetch("https://atlastrip-backend.herokuapp.com/allo", requestOptions)
+  .then(response => response.json())
+  .then(result => setHikes(result.data.hikes))
+  .catch(error => console.log('error', error));
+  }, []);
+
 
   const handleFireBaseUpload = () => {
     setImageIsLoading(true);
@@ -243,6 +270,29 @@ export const ComponentsHolder: FC<Props> = () => {
 
   return (
     <div className="flex gap-3 w-full pb-6">
+       <div></div>
+      <input type="checkbox" id="my-modal-5" className="modal-toggle" />
+      <label htmlFor="my-modal-5" className="modal cursor-pointer w-screen h-screen z-50">
+        <label className="modal-box relative max-h-[80vh]" htmlFor="">
+          <h3 className="text-lg font-bold">
+            Pick A hike to add to your ad
+          </h3>
+          <div className="py-4">
+            {
+              (hikes || []).map((hike , idx) => {
+                return (
+                  <div key={idx} className="flex bg-white rounded-lg items-center shadow-lg my-3 p-2 gap-4">
+                    <input type="radio" name="radio-4" className="radio radio-accent shadow-md" />
+                    <img src={`https://atlastrip-backend.herokuapp.com/media/${hike?.image[0]?.src}`} className="w-10 h-10 outline-none rounded-full " />
+                    <p className="text-center text-lg font-bold">{hike?.name || ''}</p>
+                  </div>
+                )
+              })
+            }
+            
+          </div>
+        </label>
+      </label>
       <motion.ul
         variants={container}
         className="p-4 gap-4 overflow-y-scroll max-h-[90vh] w-60 flex flex-wrap carousel carousel-center bg-gray-50 rounded-box"
@@ -313,9 +363,9 @@ export const ComponentsHolder: FC<Props> = () => {
       >
         Export
       </button>
-      <PrimaryBtn className="absolute top-40 right-6 p-4 rounded-lg bg-purple-800 text-white">
+      <label htmlFor="my-modal-5" className="absolute cursor-pointer top-40 right-6 p-4 rounded-lg bg-purple-800 text-white">
         Save template
-      </PrimaryBtn>
+      </label>
 
       <motion.div
         ref={ref}
